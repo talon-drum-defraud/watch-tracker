@@ -33,8 +33,12 @@ jobs:
         run: flutter pub get
 
       - name: Decode keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '[:space:]' | base64 --decode > android/app/release.jks
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > android/app/release.jks
+          keytool -list -keystore android/app/release.jks \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -noprompt
 
       - name: Build signed release APK
         run: flutter build apk --release
