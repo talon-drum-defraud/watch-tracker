@@ -32,9 +32,14 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Decode keystore
+      - name: Decrypt keystore
+        env:
+          ENC_PASSPHRASE: ${{ secrets.KEYSTORE_ENC_PASSPHRASE }}
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.jks
+          openssl enc -d -aes-256-cbc -pbkdf2 \
+            -in android/app/release.jks.enc \
+            -out android/app/release.jks \
+            -pass env:ENC_PASSPHRASE
 
       - name: Build signed release APK
         run: flutter build apk --release
