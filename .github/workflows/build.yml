@@ -40,6 +40,8 @@ jobs:
             -in android/app/release.jks.enc \
             -out android/app/release.jks \
             -pass env:ENC_PASSPHRASE
+          echo "Keystore size: $(wc -c < android/app/release.jks) bytes"
+          echo "Keystore absolute path: $(realpath android/app/release.jks)"
 
       - name: Build signed release APK
         run: flutter build apk --release
